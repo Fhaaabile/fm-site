@@ -1,0 +1,21 @@
+/* Mise en page propre au site : la grille des pages, sur les tokens du design system. Les composants gardent leurs
+   propres styles (paquet @fhaaabile/fm-design-system). */
+
+.site-main {
+  min-height: 60svh;
+}
+
+.site-page {
+  display: grid;
+  gap: var(--fm-space-12);
+  padding-block: calc(var(--fm-space-16) + var(--fm-control-height-l)) var(--fm-layout-section-y-desktop);
+  /* Même ligne d'alignement que l'en-tête et le pied de page. */
+  padding-inline: var(--fm-layout-content-x-desktop);
+}
+
+@media (max-width: 809.98px) {
+  .site-page {
+    padding-block-end: var(--fm-layout-section-y-mobile);
+    padding-inline: var(--fm-layout-content-x-mobile);
+  }
+}
