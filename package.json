@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fhaaabile/fm-design-system": "^0.2.0",
+    "@fhaaabile/fm-design-system": "^0.16.0",
     "@phosphor-icons/react": "^2.1.10",
     "@sanity/client": "^8.17.0",
     "next": "16.4.6",
