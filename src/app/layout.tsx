@@ -1,9 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import '@fhaaabile/fm-design-system/fonts.css';
-import '@fhaaabile/fm-design-system/styles.css';
-import './site.css';
-import { SiteChrome } from '@/components/SiteChrome';
 import { SITE } from '@/content/site';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -21,12 +17,14 @@ export const viewport: Viewport = {
   colorScheme: 'dark light',
 };
 
+/**
+ * Socle commun : le document seul. Le décor du site (styles du design system, en-tête, pied de page) vit dans
+ * `(site)/layout.tsx` ; le studio Sanity (`/studio`) a le sien et ne charge rien du site.
+ */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
-      <body>
-        <SiteChrome>{children}</SiteChrome>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
