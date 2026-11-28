@@ -4,8 +4,10 @@
 // du dossier `cms/` du design system, qu'il remplace : chaque champ correspond à une prop d'un composant.
 import { visionTool } from '@sanity/vision';
 import { defineConfig, type DocumentActionComponent } from 'sanity';
+import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
 import { apiVersion, dataset, projectId } from './src/sanity/env';
+import { resolve } from './src/sanity/presentation';
 import { schemaTypes, SINGLETONS } from './src/sanity/schemaTypes';
 import { structure } from './src/sanity/structure';
 import { StudioLogo } from './src/sanity/StudioLogo';
@@ -21,7 +23,8 @@ export default defineConfig({
   dataset,
   plugins: [
     structureTool({ title: 'Contenu', structure }),
-    // L'aperçu en direct (outil Présentation) arrivera avec les pages branchées sur Sanity.
+    // Aperçu en direct : la page du site à côté du formulaire, en mode brouillon ; un clic sur un texte ouvre son champ.
+    presentationTool({ title: 'Aperçu', resolve, previewUrl: { previewMode: { enable: '/api/draft-mode/enable' } } }),
     visionTool({ title: 'Requêtes', defaultApiVersion: apiVersion }),
   ],
   schema: {

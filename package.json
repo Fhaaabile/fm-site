@@ -10,10 +10,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typegen": "sanity schema extract --enforce-required-fields --force --path src/sanity/schema.json && sanity typegen generate",
+    "seed": "sanity datasets import sanity/seed --dataset production --missing"
   },
   "dependencies": {
-    "@fhaaabile/fm-design-system": "^0.17.0",
+    "@fhaaabile/fm-design-system": "^0.18.0",
     "@phosphor-icons/react": "^2.1.10",
     "@sanity/client": "^8.17.0",
     "@sanity/icons": "^5.4.0",

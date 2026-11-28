@@ -1,5 +1,5 @@
-// Requêtes GROQ du futur site. Elles rendent des textes déjà résolus dans la langue demandée ($locale, repli sur
-// le français) et des formes proches des props des composants : le site n'a plus qu'à brancher.
+// Requêtes GROQ du site. Elles rendent des textes déjà résolus dans la langue demandée ($locale, repli sur le français)
+// et des formes proches des props des composants : les pages n'ont plus qu'à brancher.
 // `npm run typegen` en tire les types TypeScript (sanity.types.ts).
 import { defineQuery } from 'groq';
 
@@ -15,7 +15,11 @@ const card = `{
   "slug": slug.current,
   "href": "/projets/" + slug.current,
   client,
+  "clientLogo": clientLogo.asset->url,
   year,
+  featured,
+  "intro": ${t('intro')},
+  "skills": ${tList('skills')},
   "cover": ${image('cover')},
   coverRatio,
   "categories": categories[]->${category}
@@ -41,6 +45,7 @@ export const homeQuery = defineQuery(`*[_id == "settings"][0]{
   "words": ${tList('heroWords')},
   "intro": ${t('heroIntro')},
   "projects": coalesce(featuredProjects[]->${card}, *[_type == "project" && featured == true] | order(order asc, year desc) ${card}),
+  "latest": *[_type == "project" && defined(slug.current)] | order(order asc, year desc)[0...3] ${card},
   "skillRows": skillRows[]{ "items": items[]{ "label": ${t('label')}, tone } }.items,
   "manifesto": manifesto[]{ "title": ${t('title')}, "description": ${t('description')} },
   "clients": clients[]{ name, "logo": logo.asset->url },

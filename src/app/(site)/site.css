@@ -19,3 +19,32 @@
     padding-inline: var(--fm-layout-content-x-mobile);
   }
 }
+
+/* ---------- Pages lues dans Sanity (lot 1) : seulement ce que le décor des pages (Page, D-126) ne couvre pas ---------- */
+
+/* Lab de l'accueil : un média et sa légende par case du mur. */
+.site-lab-item { margin: 0; }
+
+/* Plusieurs médias dans un chapitre : deux par ligne, une seule colonne sur mobile. */
+.site-case-media {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--fm-space-6);
+}
+
+@container fm-project-chapter (max-width: 809.98px) {
+  .site-case-media { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Introduction du projet, en tête du premier chapitre. */
+.site-case-lead { color: var(--fm-color-fg-default); }
+
+/* Citation dans le texte d'un chapitre. */
+.site-case-quote {
+  margin: 0;
+  padding-inline-start: var(--fm-space-6);
+  border-inline-start: var(--fm-border-width-focus) solid var(--fm-color-accent-default);
+  color: var(--fm-color-fg-default);
+  font-family: var(--fm-font-family-serif);
+  font-style: italic;
+}

@@ -1,5 +1,5 @@
-// Navigation et coordonnées partagées par toutes les pages. Textes d'interface en français, vouvoiement quand on
-// s'adresse au visiteur (doc « Site de production : architecture, positionnement et rédaction »).
+// Navigation et repli des réglages : ce que le site affiche tant qu'un réglage manque dans Sanity. Textes d'interface en
+// français, vouvoiement quand on s'adresse au visiteur.
 
 export const SITE = {
   name: 'Fabien Michaud',
