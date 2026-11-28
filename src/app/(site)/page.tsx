@@ -1,6 +1,10 @@
-import { PageIntro } from '@/components/PageIntro';
-import { SITE } from '@/content/site';
+import { load } from '@/sanity/live';
+import { homeQuery } from '@/sanity/queries';
+import type { HomeQueryResult } from '@/sanity/sanity.types';
+import { isHome } from '@/sanity/clean';
+import { HomeView } from '@/views/HomeView';
 
-export default function Home() {
-  return <PageIntro label={SITE.baseline} title={SITE.promise} description="Designer produit senior : je conçois des produits numériques et les marques qui vont avec, de la recherche au dernier pixel animé." />;
+export default async function HomePage() {
+  const data = await load<HomeQueryResult>(homeQuery, { locale: 'fr' });
+  return <HomeView home={isHome(data) ? data : null} />;
 }

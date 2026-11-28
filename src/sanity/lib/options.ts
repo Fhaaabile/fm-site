@@ -1,6 +1,6 @@
 // Listes fermées reprises des composants du design system : un choix fait dans le studio est toujours une
 // valeur que le composant sait afficher. À tenir à jour avec les types cités en commentaire.
-import { ANIMATED_ICON_NAMES } from '@fhaaabile/fm-design-system';
+import { ANIMATED_ICON_NAMES } from '@fhaaabile/fm-design-system/data';
 
 /** Langues du site. Le français est la langue de référence : il est obligatoire, l'anglais est conseillé. */
 export const LANGUAGES = [

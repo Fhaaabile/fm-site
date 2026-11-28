@@ -3,5 +3,7 @@
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '91cstvku';
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 export const apiVersion = '2026-11-01';
-export const readToken = process.env.SANITY_API_READ_TOKEN;
-export const isSanityConfigured = projectId.length > 0;
+/** Jeton Viewer : brouillons et aperçu en direct. Sans lui, le site ne montre que le contenu publié. */
+export const readToken = process.env.SANITY_API_READ_TOKEN || undefined;
+/** Hôte de l'API, seulement pour les essais hors ligne (serveur local qui rejoue l'import de départ). */
+export const apiHost = process.env.SANITY_API_HOST || undefined;

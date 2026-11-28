@@ -14,7 +14,7 @@
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
-// Source: schema.json
+// Source: src/sanity/schema.json
 export type Faq = {
   _id: string;
   _type: "faq";
@@ -92,13 +92,21 @@ export type Service = {
     | "arrow-elbow-down-left"
     | "arrow-left"
     | "arrow-right"
+    | "arrow-square-out"
     | "arrow-up"
     | "arrow-up-right"
+    | "arrows-in-line-horizontal"
+    | "arrows-out-line-horizontal"
+    | "assistant-bread"
+    | "assistant-chat"
+    | "assistant-flame"
     | "asterisk"
     | "behance-logo"
     | "briefcase"
     | "calendar-blank"
     | "caret-down"
+    | "caret-left"
+    | "caret-right"
     | "caret-up"
     | "chalkboard-teacher"
     | "chat-circle"
@@ -108,31 +116,50 @@ export type Service = {
     | "code"
     | "compass"
     | "copy"
+    | "corners-in"
     | "cube"
     | "cursor-click"
     | "desktop"
     | "dribbble-logo"
     | "envelope-simple"
+    | "export"
+    | "eye"
+    | "eye-closed"
+    | "eye-slash"
+    | "eyes"
     | "figma-logo"
+    | "flag-banner-fold"
     | "flask"
     | "framer-logo"
     | "github-logo"
     | "globe"
     | "heart"
     | "house"
+    | "house-chimney"
     | "info"
     | "instagram-logo"
     | "kanban"
+    | "link"
     | "linkedin-logo"
     | "list"
     | "magnifying-glass"
     | "map-pin"
+    | "megaphone"
+    | "minus"
     | "moon"
     | "notion-logo"
     | "palette"
     | "paper-plane-tilt"
+    | "pen"
     | "pen-nib"
+    | "pencil"
+    | "pencil-simple"
+    | "plus"
+    | "push-pin"
     | "rows"
+    | "share-network"
+    | "sliders-horizontal"
+    | "snail"
     | "sparkle"
     | "squares-four"
     | "stack"
@@ -141,6 +168,7 @@ export type Service = {
     | "trash"
     | "trend-up"
     | "user"
+    | "user-circle"
     | "users-three"
     | "warning-circle"
     | "x";
@@ -472,6 +500,44 @@ export type Video = {
   label: LocaleString;
 };
 
+export type SanityReleaseMetadata = {
+  _type: "sanity.releaseMetadata";
+  title?: string;
+  description?: string;
+  releaseType: "asap" | "scheduled" | "undecided";
+  intendedPublishAt?: string;
+  cardinality?: "many" | "one";
+};
+
+export type SystemRelease = {
+  _id: string;
+  _type: "system.release";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  state?:
+    | "active"
+    | "archiving"
+    | "unarchiving"
+    | "archived"
+    | "published"
+    | "publishing"
+    | "scheduled"
+    | "scheduling";
+  error?: {
+    message?: string;
+  };
+  publishAt?: string;
+  publishedAt?: string;
+  metadata?: SanityReleaseMetadata;
+  finalDocumentStates?: Array<{
+    id?: string;
+    _key: string;
+  }>;
+  userId?: string;
+};
+
 export type SanityImagePaletteSwatch = {
   _type: "sanity.imagePaletteSwatch";
   background?: string;
@@ -596,6 +662,8 @@ export type AllSanitySchemaTypes =
   | SocialLink
   | SanityFileAssetReference
   | Video
+  | SanityReleaseMetadata
+  | SystemRelease
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -605,7 +673,7 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
-// Source: queries.ts
+// Source: src/sanity/queries.ts
 // Variable: settingsQuery
 // Query: *[_id == "settings"][0]{  name,  "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr),  "avatar": avatar{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  "disciplines": disciplines[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  city,  timeZone,  email,  socials[]{ network, "href": url },  "cta": cta{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href },  "availability": { "status": availabilityStatus, "label": select($locale == "en" => coalesce(availabilityLabel.en, availabilityLabel.fr), availabilityLabel.fr), "detail": select($locale == "en" => coalesce(availabilityDetail.en, availabilityDetail.fr), availabilityDetail.fr) },  "footer": { "description": select($locale == "en" => coalesce(footerDescription.en, footerDescription.fr), footerDescription.fr), "columns": footerColumns[]{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "links": links[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href } } },  "seo": seo{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "image": image.asset->url, noIndex }}
 export type SettingsQueryResult =
@@ -655,6 +723,27 @@ export type SettingsQueryResult =
         image: string | null;
         noIndex: boolean | null;
       } | null;
+    }
+  | {
+      name: string | null;
+      role: null;
+      avatar: null;
+      disciplines: null;
+      city: null;
+      timeZone: null;
+      email: null;
+      socials: null;
+      cta: null;
+      availability: {
+        status: null;
+        label: null;
+        detail: null;
+      };
+      footer: {
+        description: null;
+        columns: null;
+      };
+      seo: null;
     }
   | {
       name: string;
@@ -729,9 +818,9 @@ export type SettingsQueryResult =
     }
   | null;
 
-// Source: queries.ts
+// Source: src/sanity/queries.ts
 // Variable: homeQuery
-// Query: *[_id == "settings"][0]{  "title": select($locale == "en" => coalesce(heroTitle.en, heroTitle.fr), heroTitle.fr),  "words": heroWords[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "intro": select($locale == "en" => coalesce(heroIntro.en, heroIntro.fr), heroIntro.fr),  "projects": coalesce(featuredProjects[]->{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  year,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}, *[_type == "project" && featured == true] | order(order asc, year desc) {  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  year,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}),  "skillRows": skillRows[]{ "items": items[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), tone } }.items,  "manifesto": manifesto[]{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) },  "clients": clients[]{ name, "logo": logo.asset->url },  "services": *[_type == "service"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "details": details[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v, icon, "preview": preview{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },  "testimonials": *[_type == "testimonial"] | order(order asc){ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },  "lab": *[_type == "lab"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "kind": select($locale == "en" => coalesce(kind.en, kind.fr), kind.fr), year, tone, url, "media": media{ kind, ratio, "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } } },  "faq": *[_type == "faq"] | order(order asc){ "title": select($locale == "en" => coalesce(question.en, question.fr), question.fr), "content": select($locale == "en" => coalesce(answer.en, answer.fr), answer.fr), topic }}
+// Query: *[_id == "settings"][0]{  "title": select($locale == "en" => coalesce(heroTitle.en, heroTitle.fr), heroTitle.fr),  "words": heroWords[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "intro": select($locale == "en" => coalesce(heroIntro.en, heroIntro.fr), heroIntro.fr),  "projects": coalesce(featuredProjects[]->{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}, *[_type == "project" && featured == true] | order(order asc, year desc) {  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}),  "latest": *[_type == "project" && defined(slug.current)] | order(order asc, year desc)[0...3] {  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }},  "skillRows": skillRows[]{ "items": items[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), tone } }.items,  "manifesto": manifesto[]{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) },  "clients": clients[]{ name, "logo": logo.asset->url },  "services": *[_type == "service"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "details": details[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v, icon, "preview": preview{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },  "testimonials": *[_type == "testimonial"] | order(order asc){ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },  "lab": *[_type == "lab"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "kind": select($locale == "en" => coalesce(kind.en, kind.fr), kind.fr), year, tone, url, "media": media{ kind, ratio, "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } } },  "faq": *[_type == "faq"] | order(order asc){ "title": select($locale == "en" => coalesce(question.en, question.fr), question.fr), "content": select($locale == "en" => coalesce(answer.en, answer.fr), answer.fr), topic }}
 export type HomeQueryResult =
   | {
       title: null;
@@ -742,7 +831,36 @@ export type HomeQueryResult =
         slug: string;
         href: string;
         client: string | null;
+        clientLogo: string | null;
         year: string | null;
+        featured: true;
+        intro: string | null;
+        skills: Array<string> | null;
+        cover: {
+          src: string | null;
+          alt: string | null;
+          lqip: string | null;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+        };
+        coverRatio:
+          "1 / 1" | "16 / 10" | "16 / 9" | "3 / 4" | "4 / 3" | "9 / 16" | null;
+        categories: Array<{
+          label: string;
+          swatch: "accent" | "secondary" | "tertiary" | null;
+          slug: string;
+        }> | null;
+      }>;
+      latest: Array<{
+        title: string;
+        slug: string;
+        href: string;
+        client: string | null;
+        clientLogo: string | null;
+        year: string | null;
+        featured: boolean | null;
+        intro: string | null;
+        skills: Array<string> | null;
         cover: {
           src: string | null;
           alt: string | null;
@@ -771,13 +889,21 @@ export type HomeQueryResult =
           | "arrow-elbow-down-left"
           | "arrow-left"
           | "arrow-right"
+          | "arrow-square-out"
           | "arrow-up-right"
           | "arrow-up"
+          | "arrows-in-line-horizontal"
+          | "arrows-out-line-horizontal"
+          | "assistant-bread"
+          | "assistant-chat"
+          | "assistant-flame"
           | "asterisk"
           | "behance-logo"
           | "briefcase"
           | "calendar-blank"
           | "caret-down"
+          | "caret-left"
+          | "caret-right"
           | "caret-up"
           | "chalkboard-teacher"
           | "chat-circle-dots"
@@ -787,31 +913,50 @@ export type HomeQueryResult =
           | "code"
           | "compass"
           | "copy"
+          | "corners-in"
           | "cube"
           | "cursor-click"
           | "desktop"
           | "dribbble-logo"
           | "envelope-simple"
+          | "export"
+          | "eye-closed"
+          | "eye-slash"
+          | "eye"
+          | "eyes"
           | "figma-logo"
+          | "flag-banner-fold"
           | "flask"
           | "framer-logo"
           | "github-logo"
           | "globe"
           | "heart"
+          | "house-chimney"
           | "house"
           | "info"
           | "instagram-logo"
           | "kanban"
+          | "link"
           | "linkedin-logo"
           | "list"
           | "magnifying-glass"
           | "map-pin"
+          | "megaphone"
+          | "minus"
           | "moon"
           | "notion-logo"
           | "palette"
           | "paper-plane-tilt"
           | "pen-nib"
+          | "pen"
+          | "pencil-simple"
+          | "pencil"
+          | "plus"
+          | "push-pin"
           | "rows"
+          | "share-network"
+          | "sliders-horizontal"
+          | "snail"
           | "sparkle"
           | "squares-four"
           | "stack"
@@ -819,6 +964,7 @@ export type HomeQueryResult =
           | "translate"
           | "trash"
           | "trend-up"
+          | "user-circle"
           | "user"
           | "users-three"
           | "warning-circle"
@@ -896,12 +1042,79 @@ export type HomeQueryResult =
       title: string | null;
       words: Array<string> | null;
       intro: string | null;
-      projects: Array<{
+      projects:
+        | Array<{
+            title: string;
+            slug: string;
+            href: string;
+            client: string | null;
+            clientLogo: string | null;
+            year: string | null;
+            featured: true;
+            intro: string | null;
+            skills: Array<string> | null;
+            cover: {
+              src: string | null;
+              alt: string | null;
+              lqip: string | null;
+              hotspot: SanityImageHotspot | null;
+              crop: SanityImageCrop | null;
+            };
+            coverRatio:
+              | "1 / 1"
+              | "16 / 10"
+              | "16 / 9"
+              | "3 / 4"
+              | "4 / 3"
+              | "9 / 16"
+              | null;
+            categories: Array<{
+              label: string;
+              swatch: "accent" | "secondary" | "tertiary" | null;
+              slug: string;
+            }> | null;
+          }>
+        | Array<{
+            title: string;
+            slug: string;
+            href: string;
+            client: string | null;
+            clientLogo: string | null;
+            year: string | null;
+            featured: boolean | null;
+            intro: string | null;
+            skills: Array<string> | null;
+            cover: {
+              src: string | null;
+              alt: string | null;
+              lqip: string | null;
+              hotspot: SanityImageHotspot | null;
+              crop: SanityImageCrop | null;
+            };
+            coverRatio:
+              | "1 / 1"
+              | "16 / 10"
+              | "16 / 9"
+              | "3 / 4"
+              | "4 / 3"
+              | "9 / 16"
+              | null;
+            categories: Array<{
+              label: string;
+              swatch: "accent" | "secondary" | "tertiary" | null;
+              slug: string;
+            }> | null;
+          }>;
+      latest: Array<{
         title: string;
         slug: string;
         href: string;
         client: string | null;
+        clientLogo: string | null;
         year: string | null;
+        featured: boolean | null;
+        intro: string | null;
+        skills: Array<string> | null;
         cover: {
           src: string | null;
           alt: string | null;
@@ -939,13 +1152,21 @@ export type HomeQueryResult =
           | "arrow-elbow-down-left"
           | "arrow-left"
           | "arrow-right"
+          | "arrow-square-out"
           | "arrow-up-right"
           | "arrow-up"
+          | "arrows-in-line-horizontal"
+          | "arrows-out-line-horizontal"
+          | "assistant-bread"
+          | "assistant-chat"
+          | "assistant-flame"
           | "asterisk"
           | "behance-logo"
           | "briefcase"
           | "calendar-blank"
           | "caret-down"
+          | "caret-left"
+          | "caret-right"
           | "caret-up"
           | "chalkboard-teacher"
           | "chat-circle-dots"
@@ -955,31 +1176,50 @@ export type HomeQueryResult =
           | "code"
           | "compass"
           | "copy"
+          | "corners-in"
           | "cube"
           | "cursor-click"
           | "desktop"
           | "dribbble-logo"
           | "envelope-simple"
+          | "export"
+          | "eye-closed"
+          | "eye-slash"
+          | "eye"
+          | "eyes"
           | "figma-logo"
+          | "flag-banner-fold"
           | "flask"
           | "framer-logo"
           | "github-logo"
           | "globe"
           | "heart"
+          | "house-chimney"
           | "house"
           | "info"
           | "instagram-logo"
           | "kanban"
+          | "link"
           | "linkedin-logo"
           | "list"
           | "magnifying-glass"
           | "map-pin"
+          | "megaphone"
+          | "minus"
           | "moon"
           | "notion-logo"
           | "palette"
           | "paper-plane-tilt"
           | "pen-nib"
+          | "pen"
+          | "pencil-simple"
+          | "pencil"
+          | "plus"
+          | "push-pin"
           | "rows"
+          | "share-network"
+          | "sliders-horizontal"
+          | "snail"
           | "sparkle"
           | "squares-four"
           | "stack"
@@ -987,6 +1227,7 @@ export type HomeQueryResult =
           | "translate"
           | "trash"
           | "trend-up"
+          | "user-circle"
           | "user"
           | "users-three"
           | "warning-circle"
@@ -1062,15 +1303,19 @@ export type HomeQueryResult =
     }
   | null;
 
-// Source: queries.ts
+// Source: src/sanity/queries.ts
 // Variable: projectsQuery
-// Query: *[_type == "project" && defined(slug.current)] | order(order asc, year desc) {  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  year,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}
+// Query: *[_type == "project" && defined(slug.current)] | order(order asc, year desc) {  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}
 export type ProjectsQueryResult = Array<{
   title: string;
   slug: string;
   href: string;
   client: string | null;
+  clientLogo: string | null;
   year: string | null;
+  featured: boolean | null;
+  intro: string | null;
+  skills: Array<string> | null;
   cover: {
     src: string | null;
     alt: string | null;
@@ -1087,20 +1332,24 @@ export type ProjectsQueryResult = Array<{
   }> | null;
 }>;
 
-// Source: queries.ts
+// Source: src/sanity/queries.ts
 // Variable: projectSlugsQuery
 // Query: *[_type == "project" && defined(slug.current)].slug.current
 export type ProjectSlugsQueryResult = Array<string>;
 
-// Source: queries.ts
+// Source: src/sanity/queries.ts
 // Variable: projectQuery
-// Query: *[_type == "project" && slug.current == $slug][0]{  ...{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  year,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }},  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  tools,  "meta": meta[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "value": select($locale == "en" => coalesce(value.en, value.fr), value.fr) },  "heroCover": coalesce(heroCover.asset->url, cover.asset->url),  "thumbnail": thumbnail{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  "liveLink": liveLink{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href },  "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "media": media{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },  "chapters": chapters[]{    "id": _key,    "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr),    "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),    "body": select($locale == "en" => coalesce(body.en, body.fr), body.fr),    "media": media[]{ kind, ratio, framed, scrollZoom, "caption": select($locale == "en" => coalesce(caption.en, caption.fr), caption.fr), "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } },    "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) }  },  "testimonial": testimonial->{ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },  "seo": seo{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "image": image.asset->url, noIndex },  "pagination": {    "previous": *[_type == "project" && defined(slug.current) && ((^.order != null && order < ^.order) || (^.order == null && year > ^.year))] | order(order desc, year asc)[0]{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  year,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }},    "next": *[_type == "project" && defined(slug.current) && ((^.order != null && order > ^.order) || (^.order == null && year < ^.year))] | order(order asc, year desc)[0]{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  year,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}  }}
+// Query: *[_type == "project" && slug.current == $slug][0]{  ...{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }},  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  tools,  "meta": meta[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "value": select($locale == "en" => coalesce(value.en, value.fr), value.fr) },  "heroCover": coalesce(heroCover.asset->url, cover.asset->url),  "thumbnail": thumbnail{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  "liveLink": liveLink{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href },  "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "media": media{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },  "chapters": chapters[]{    "id": _key,    "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr),    "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),    "body": select($locale == "en" => coalesce(body.en, body.fr), body.fr),    "media": media[]{ kind, ratio, framed, scrollZoom, "caption": select($locale == "en" => coalesce(caption.en, caption.fr), caption.fr), "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } },    "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) }  },  "testimonial": testimonial->{ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },  "seo": seo{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "image": image.asset->url, noIndex },  "pagination": {    "previous": *[_type == "project" && defined(slug.current) && ((^.order != null && order < ^.order) || (^.order == null && year > ^.year))] | order(order desc, year asc)[0]{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }},    "next": *[_type == "project" && defined(slug.current) && ((^.order != null && order > ^.order) || (^.order == null && year < ^.year))] | order(order asc, year desc)[0]{  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),  "slug": slug.current,  "href": "/projets/" + slug.current,  client,  "clientLogo": clientLogo.asset->url,  year,  featured,  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },  coverRatio,  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }}  }}
 export type ProjectQueryResult = {
   title: string;
   slug: string;
   href: string;
   client: string | null;
+  clientLogo: string | null;
   year: string | null;
+  featured: boolean | null;
+  intro: string | null;
+  skills: Array<string> | null;
   cover: {
     src: string | null;
     alt: string | null;
@@ -1115,9 +1364,7 @@ export type ProjectQueryResult = {
     swatch: "accent" | "secondary" | "tertiary" | null;
     slug: string;
   }> | null;
-  intro: string | null;
   role: string | null;
-  skills: Array<string> | null;
   tools: Array<string> | null;
   meta: Array<{
     label: string;
@@ -1214,7 +1461,11 @@ export type ProjectQueryResult = {
       slug: string;
       href: string;
       client: string | null;
+      clientLogo: string | null;
       year: string | null;
+      featured: boolean | null;
+      intro: string | null;
+      skills: Array<string> | null;
       cover: {
         src: string | null;
         alt: string | null;
@@ -1235,7 +1486,11 @@ export type ProjectQueryResult = {
       slug: string;
       href: string;
       client: string | null;
+      clientLogo: string | null;
       year: string | null;
+      featured: boolean | null;
+      intro: string | null;
+      skills: Array<string> | null;
       cover: {
         src: string | null;
         alt: string | null;
@@ -1258,10 +1513,10 @@ export type ProjectQueryResult = {
 declare global {
   interface SanityQueries {
     '*[_id == "settings"][0]{\n  name,\n  "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr),\n  "avatar": avatar{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  "disciplines": disciplines[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  city,\n  timeZone,\n  email,\n  socials[]{ network, "href": url },\n  "cta": cta{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href },\n  "availability": { "status": availabilityStatus, "label": select($locale == "en" => coalesce(availabilityLabel.en, availabilityLabel.fr), availabilityLabel.fr), "detail": select($locale == "en" => coalesce(availabilityDetail.en, availabilityDetail.fr), availabilityDetail.fr) },\n  "footer": { "description": select($locale == "en" => coalesce(footerDescription.en, footerDescription.fr), footerDescription.fr), "columns": footerColumns[]{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "links": links[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href } } },\n  "seo": seo{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "image": image.asset->url, noIndex }\n}': SettingsQueryResult;
-    '*[_id == "settings"][0]{\n  "title": select($locale == "en" => coalesce(heroTitle.en, heroTitle.fr), heroTitle.fr),\n  "words": heroWords[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "intro": select($locale == "en" => coalesce(heroIntro.en, heroIntro.fr), heroIntro.fr),\n  "projects": coalesce(featuredProjects[]->{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  year,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}, *[_type == "project" && featured == true] | order(order asc, year desc) {\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  year,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}),\n  "skillRows": skillRows[]{ "items": items[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), tone } }.items,\n  "manifesto": manifesto[]{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) },\n  "clients": clients[]{ name, "logo": logo.asset->url },\n  "services": *[_type == "service"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "details": details[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v, icon, "preview": preview{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },\n  "testimonials": *[_type == "testimonial"] | order(order asc){ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },\n  "lab": *[_type == "lab"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "kind": select($locale == "en" => coalesce(kind.en, kind.fr), kind.fr), year, tone, url, "media": media{ kind, ratio, "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } } },\n  "faq": *[_type == "faq"] | order(order asc){ "title": select($locale == "en" => coalesce(question.en, question.fr), question.fr), "content": select($locale == "en" => coalesce(answer.en, answer.fr), answer.fr), topic }\n}': HomeQueryResult;
-    '*[_type == "project" && defined(slug.current)] | order(order asc, year desc) {\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  year,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}': ProjectsQueryResult;
+    '*[_id == "settings"][0]{\n  "title": select($locale == "en" => coalesce(heroTitle.en, heroTitle.fr), heroTitle.fr),\n  "words": heroWords[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "intro": select($locale == "en" => coalesce(heroIntro.en, heroIntro.fr), heroIntro.fr),\n  "projects": coalesce(featuredProjects[]->{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}, *[_type == "project" && featured == true] | order(order asc, year desc) {\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}),\n  "latest": *[_type == "project" && defined(slug.current)] | order(order asc, year desc)[0...3] {\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n},\n  "skillRows": skillRows[]{ "items": items[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), tone } }.items,\n  "manifesto": manifesto[]{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) },\n  "clients": clients[]{ name, "logo": logo.asset->url },\n  "services": *[_type == "service"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "details": details[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v, icon, "preview": preview{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },\n  "testimonials": *[_type == "testimonial"] | order(order asc){ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },\n  "lab": *[_type == "lab"] | order(order asc){ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "kind": select($locale == "en" => coalesce(kind.en, kind.fr), kind.fr), year, tone, url, "media": media{ kind, ratio, "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } } },\n  "faq": *[_type == "faq"] | order(order asc){ "title": select($locale == "en" => coalesce(question.en, question.fr), question.fr), "content": select($locale == "en" => coalesce(answer.en, answer.fr), answer.fr), topic }\n}': HomeQueryResult;
+    '*[_type == "project" && defined(slug.current)] | order(order asc, year desc) {\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}': ProjectsQueryResult;
     '*[_type == "project" && defined(slug.current)].slug.current': ProjectSlugsQueryResult;
-    '*[_type == "project" && slug.current == $slug][0]{\n  ...{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  year,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n},\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  tools,\n  "meta": meta[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "value": select($locale == "en" => coalesce(value.en, value.fr), value.fr) },\n  "heroCover": coalesce(heroCover.asset->url, cover.asset->url),\n  "thumbnail": thumbnail{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  "liveLink": liveLink{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href },\n  "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "media": media{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },\n  "chapters": chapters[]{\n    "id": _key,\n    "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr),\n    "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n    "body": select($locale == "en" => coalesce(body.en, body.fr), body.fr),\n    "media": media[]{ kind, ratio, framed, scrollZoom, "caption": select($locale == "en" => coalesce(caption.en, caption.fr), caption.fr), "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } },\n    "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) }\n  },\n  "testimonial": testimonial->{ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },\n  "seo": seo{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "image": image.asset->url, noIndex },\n  "pagination": {\n    "previous": *[_type == "project" && defined(slug.current) && ((^.order != null && order < ^.order) || (^.order == null && year > ^.year))] | order(order desc, year asc)[0]{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  year,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n},\n    "next": *[_type == "project" && defined(slug.current) && ((^.order != null && order > ^.order) || (^.order == null && year < ^.year))] | order(order asc, year desc)[0]{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  year,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}\n  }\n}': ProjectQueryResult;
+    '*[_type == "project" && slug.current == $slug][0]{\n  ...{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n},\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  tools,\n  "meta": meta[]{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "value": select($locale == "en" => coalesce(value.en, value.fr), value.fr) },\n  "heroCover": coalesce(heroCover.asset->url, cover.asset->url),\n  "thumbnail": thumbnail{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  "liveLink": liveLink{ "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), href },\n  "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "media": media{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop } },\n  "chapters": chapters[]{\n    "id": _key,\n    "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr),\n    "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n    "body": select($locale == "en" => coalesce(body.en, body.fr), body.fr),\n    "media": media[]{ kind, ratio, framed, scrollZoom, "caption": select($locale == "en" => coalesce(caption.en, caption.fr), caption.fr), "image": image{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop }, "video": video{ "src": file.asset->url, "poster": poster.asset->url, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr) } },\n    "figures": figures[]{ value, "label": select($locale == "en" => coalesce(label.en, label.fr), label.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr) }\n  },\n  "testimonial": testimonial->{ "quote": select($locale == "en" => coalesce(quote.en, quote.fr), quote.fr), name, "role": select($locale == "en" => coalesce(role.en, role.fr), role.fr), company, "avatar": avatar.asset->url },\n  "seo": seo{ "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr), "description": select($locale == "en" => coalesce(description.en, description.fr), description.fr), "image": image.asset->url, noIndex },\n  "pagination": {\n    "previous": *[_type == "project" && defined(slug.current) && ((^.order != null && order < ^.order) || (^.order == null && year > ^.year))] | order(order desc, year asc)[0]{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n},\n    "next": *[_type == "project" && defined(slug.current) && ((^.order != null && order > ^.order) || (^.order == null && year < ^.year))] | order(order asc, year desc)[0]{\n  "title": select($locale == "en" => coalesce(title.en, title.fr), title.fr),\n  "slug": slug.current,\n  "href": "/projets/" + slug.current,\n  client,\n  "clientLogo": clientLogo.asset->url,\n  year,\n  featured,\n  "intro": select($locale == "en" => coalesce(intro.en, intro.fr), intro.fr),\n  "skills": skills[]{ "v": select($locale == "en" => coalesce(@.en, @.fr), @.fr) }.v,\n  "cover": cover{ "src": asset->url, "alt": select($locale == "en" => coalesce(alt.en, alt.fr), alt.fr), "lqip": asset->metadata.lqip, "hotspot": hotspot, "crop": crop },\n  coverRatio,\n  "categories": categories[]->{ "label": select($locale == "en" => coalesce(title.en, title.fr), title.fr), swatch, "slug": slug.current }\n}\n  }\n}': ProjectQueryResult;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too
