@@ -40,6 +40,15 @@ npm run typecheck  # types
 npm run build      # build de production
 ```
 
+## Studio Sanity (`/studio`)
+
+Le contenu du site s'édite dans le studio Sanity, servi par le site lui-même à l'adresse `/studio` (en local : http://localhost:3000/studio ; sur staging : https://staging.fabienmichaud.com/studio). Il se déploie avec le site, à chaque PR. Il ne charge rien du site (ni styles, ni en-tête) et n'est jamais indexé.
+
+- **Accès** : une connexion Sanity (compte du projet `91cstvku`). Avant le lancement, `/studio` est aussi derrière la protection Vercel du staging.
+- **Une fois, dans Sanity** : sur https://www.sanity.io/manage → projet → API → CORS origins, ajouter chaque adresse qui sert le studio, avec « Allow credentials » coché : `http://localhost:3000`, `https://staging.fabienmichaud.com`, `https://fabienmichaud.com`, et les aperçus Vercel (`https://*.vercel.app`, ou l'adresse de l'équipe). Sans cela, le studio affiche « Couldn't reach the Sanity servers ».
+- **Où vit le modèle** : `sanity.config.ts` (racine) et `src/sanity/` (types de documents, structure de la barre latérale, listes fermées reprises du design system, requêtes GROQ dans `queries.ts`). Chaque champ correspond à une prop d'un composant du design system ; les icônes proposées sont celles du paquet (`ANIMATED_ICON_NAMES`).
+- **Types des requêtes** : `src/sanity/sanity.types.ts` vient de l'ancien studio du design system. Les régénérer (`npx sanity typegen generate`) demandera un point d'entrée léger des noms d'icônes dans le paquet : à venir.
+
 ## Mettre à jour le design system
 
 Une nouvelle version du paquet sort quand la PR « Version du paquet » est fusionnée dans `fm-design-system`. Côté site : `npm install @fhaaabile/fm-design-system@latest` dans une PR, vérifiée sur son aperçu Vercel.
